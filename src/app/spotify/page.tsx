@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -15,7 +16,8 @@ export default function SpotifyControl() {
       const res = await axios.get(`${API_BASE}/top-tracks`);
       setTopTracks(res.data.items || []);
       setMessage("✅ Top tracks loaded successfully.");
-    } catch (_) {
+    } catch (err: any) {
+      console.error(err);
       setMessage(
         "❌ Failed to fetch top tracks. Please check if Spotify is running and authorized."
       );
@@ -30,17 +32,19 @@ export default function SpotifyControl() {
         setIsPlaying(true);
         setMessage(
           `🎵 Now playing: ${res.data.item.name} by ${res.data.item.artists
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((a: any) => a.name)
             .join(", ")}`
         );
       } else {
         setCurrentlyPlaying(null);
         setIsPlaying(false);
-        setMessage("ℹ️ No track is currently playing.");
+        setMessage(" No track is currently playing.");
       }
-    } catch (_) {
+    } catch (err: any) {
       setCurrentlyPlaying(null);
       setIsPlaying(false);
+      console.error(err);
       setMessage(
         "❌ Failed to fetch currently playing track. Make sure your Spotify player is active."
       );
@@ -93,20 +97,20 @@ export default function SpotifyControl() {
       <div className="space-y-2 mb-6">
         <button
           onClick={getTopTracks}
-          className="bg-green-500 px-4 py-2 rounded"
+          className="bg-green-500 px-4 py-2 mr-2 rounded hover:bg-green-600 cursor-pointer"
         >
           Get Top Tracks
         </button>
         <button
           onClick={getCurrentlyPlaying}
-          className="bg-blue-500 px-4 py-2 rounded"
+          className="bg-blue-500 px-4 py-2 mr-2 rounded hover:bg-blue-600 cursor-pointer"
         >
           Refresh Currently Playing
         </button>
         <button
           onClick={stopPlayback}
-          className={`px-4 py-2 rounded ${
-            isPlaying ? "bg-red-500" : "bg-gray-600 cursor-not-allowed"
+          className={`px-4 py-2 mr-2 rounded ${
+            isPlaying ? "bg-red-500 cursor-pointer" : "bg-gray-600 cursor-not-allowed hover:bg-gray-600"
           }`}
           disabled={!isPlaying}
         >
